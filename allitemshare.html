@@ -79,7 +79,7 @@ function appstore(data){
 			icon100 = icon100.replace("100x100-75.", "512x512-75.");
 		}
 //icon100 = app.artworkUrl100;
-alert(icon100);
+//alert(icon100);
 		if(kind != "mac-software" && app.screenshotUrls[0] && app.ipadScreenshotUrls[0]) { device = "iOS";}
 		if(kind != "mac-software" && app.screenshotUrls[0] && !app.ipadScreenshotUrls[0]) {device = "iPhone";}
 		if(kind != "mac-software" && !app.screenshotUrls[0] && app.ipadScreenshotUrls[0]) {device = "iPad";}
