@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+<title>New AppHtml</title>
+<style type=text/css>
+<!--
+body{font-size:14px;margin:0px;padding:10px;font-family:"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo, "ＭＳ Ｐゴシック",sans-serif;}
+h2{margin:0px}
+
+}
+-->
+</style>
+
+</head>
+<body>
+<h2>New AppHtml</h2>
+<form name="item">
+<p><input type="radio" name="appkind" checked>iPhone <input type="radio" name="appkind">iPad <input type="radio" name="appkind">Mac <input type="radio" name="appkind">Song <input type="radio" name="appkind">Album <input type="radio" name="appkind">Movie <input type="radio" name="appkind">eBook </p>
+<p><input type="text" size="30" id="app" value=""><br>
+<input type="button" value="Search" onclick="javascript:main();"> <input type="button" value="Clear" onclick="javascript:Clear();"></p>
+<input type="hidden" id="at" value="">
+<input type="hidden" id="ct" value="">
+<input type="hidden" id="out" value="code">
+</form>
+
+<script type="text/javascript">
+<!--
+function main() {
+	var d = document;
+	var limit = 5;
+	var base = "https://itunes.apple.com/search?country=JP&entity=";
+	var x = d.getElementById("app").value;
+
+	if(d.item.elements[0].checked) type = "software";
+	if(d.item.elements[1].checked) type = "iPadSoftware";
+	if(d.item.elements[2].checked) type = "macSoftware";
+	if(d.item.elements[3].checked) type = "song";
+	if(d.item.elements[4].checked) type = "album";
+	if(d.item.elements[5].checked) type = "movie";
+	if(d.item.elements[6].checked) type = "ebook";
+
+	var searchapi = base + type + "&limit=" + limit + "&term="+encodeURIComponent(x) + "&callback=appstore";
+	var script = d.createElement("script");
+	script.setAttribute("src", searchapi);
+	script.setAttribute("charset", "utf-8");
+	d.body.appendChild(script);
+}
+
+function appstore(data){
+	var d=document, html = {}, tmpl="";
+	var iconw = 75;
+	var aff_id=d.getElementById("at").value;
+	var aff_ct=d.getElementById("ct").value;
+	var out=d.getElementById("out").value;
+
+	var body = "";
+
+	if(data.resultCount == 0){alert(d.getElementById("app").value+": Not Found...");return;}
+
+	for (var i = 0; i < data.resultCount; i++) {
+		var app = new Array();
+		app = data.results[i];
+		if(app.wrapperType=="artist") {continue;}
+
+	if(d.item.elements[0].checked || d.item.elements[1].checked || d.item.elements[2].checked){
+		name=app.trackCensoredName;
+		url=app.trackViewUrl;
+		kind=app.kind;
+		if(app.artworkUrl512){
+			icon100 = app.artworkUrl512;
+		} else {
+			tmp = app.artworkUrl100.split(".");
+			reg = new RegExp(tmp[tmp.length - 1] + '$');
+			icon100 = app.artworkUrl100.replace(reg, "100x100-75." + tmp[tmp.length - 1]);
+			icon100 = icon100.replace("100x100-75.", "512x512-75.");
+		}
+//icon100 = app.artworkUrl100;
+alert(icon100);
+		if(kind != "mac-software" && app.screenshotUrls[0] && app.ipadScreenshotUrls[0]) { device = "iOS";}
+		if(kind != "mac-software" && app.screenshotUrls[0] && !app.ipadScreenshotUrls[0]) {device = "iPhone";}
+		if(kind != "mac-software" && !app.screenshotUrls[0] && app.ipadScreenshotUrls[0]) {device = "iPad";}
+		if(kind == "mac-software") {device = "Mac";}
+	}
+
+	if(d.item.elements[3].checked){
+		name=app.trackCensoredName;
+		kind=app.kind;
+		url=app.collectionViewUrl;
+		icon100 = app.artworkUrl100;
+		icon170 = app.artworkUrl100.replace("100x100-75","170x170-75");
+		icon225 = app.artworkUrl100.replace("100x100-75","225x225-75");
+		icon450 = app.artworkUrl100.replace("100x100-75","450x450-75");
+	}
+
+	if(d.item.elements[4].checked){
+		name=app.collectionCensoredName;
+		kind="album";
+		url=app.collectionViewUrl;
+		icon100 = app.artworkUrl100;
+		icon170 = app.artworkUrl100.replace("100x100-75","170x170-75");
+		icon225 = app.artworkUrl100.replace("100x100-75","225x225-75");
+		icon450 = app.artworkUrl100.replace("100x100-75","450x450-75");
+
+	}
+	if(d.item.elements[5].checked){
+		name=app.trackCensoredName;
+		kind="movie";
+		url=app.trackViewUrl;
+		icon100 = app.artworkUrl100;
+		icon140 = app.artworkUrl100.replace("100x100-75","140x140-75");
+		icon227 = app.artworkUrl100.replace("100x100-75","227x227-75");
+		icon454 = app.artworkUrl100.replace("100x100-75","454x454-75");
+	}
+	if(d.item.elements[6].checked){
+		name=app.trackCensoredName;
+		kind="ebook";
+		url=app.trackViewUrl;
+		icon100 = app.artworkUrl100;
+		icon225 = app.artworkUrl100.replace("100x100-75","225x225-75");
+		icon450 = app.artworkUrl100.replace("100x100-75","450x450-75");
+	}
+	artist=app.artistName;
+	icon60=app.artworkUrl60;
+
+//	icon100 = app.artworkUrl100;
+	if(aff_id != "" && aff_id != "undefined") {aff = url + "&at=" + aff_id;} else {aff = url}
+	if(aff_ct != "" && aff_ct != "undefined") {aff = aff + "&ct=" + aff_ct;}
+
+	if(kind == "software"){
+		tmpl="<div class=\"apphtml\"><img class=\"apphtml_icon\" style=\"margin:0px 0px 5px 0px;border:none;padding:0px;\" width=\""+iconw+"\" src=\""+icon100+"\"><br><span class=\"apphtml_name\">"+name+"</span><br><a href=\""+aff+"\" target=\"_blank\" rel=\"nofollow\"><img class=\"apphtml_badge\" src=\"http://linkmaker.itunes.apple.com/htmlResources/assets/ja_jp//images/web/linkmaker/badge_appstore-lrg.svg\" style=\"margin:5px 0px 0px 0px;border:none;padding:0px\"></a></div>\n";
+	} else if(kind == "mac-software" ){
+		tmpl="<div class=\"apphtml\"><img class=\"apphtml_icon\" style=\"margin:0px 0px 5px 0px;border:none;padding:0px;\" width=\""+iconw+"\" src=\""+icon100+"\"><br><span class=\"apphtml_name\">"+name+"</span><br><a href=\""+aff+"\" target=\"_blank\" rel=\"nofollow\"><img class=\"apphtml_badge\" src=\"http://linkmaker.itunes.apple.com/htmlResources/assets/ja_jp//images/web/linkmaker/badge_macappstore-lrg.svg\" style=\"margin:5px 0px 0px 0px;border:none;padding:0px\"></a></div>\n";
+	} else if(kind == "song" || kind == "album") {
+		tmpl="<div class=\"apphtml\"><img class=\"apphtml_icon\" style=\"margin:0px 0px 5px 0px;border:none;padding:0px;\" width=\"225\" src=\""+icon450+"\"><br><span class=\"apphtml_name\">"+name+" - "+artist+"</span><br><a href=\""+aff+"\" target=\"_blank\" rel=\"nofollow\"><img class=\"apphtml_badge\" src=\"http://linkmaker.itunes.apple.com/htmlResources/assets/ja_jp//images/web/linkmaker/badge_itunes-lrg.svg\" style=\"margin:5px 0px 0px 0px;border:none;padding:0px\"></a></div>\n";
+	} else if(kind == "movie") {
+		tmpl="<div class=\"apphtml\"><img class=\"apphtml_icon\" style=\"margin:0px 0px 5px 0px;border:none;padding:0px;\" width=\"227\" src=\""+icon454+"\"><br><span class=\"apphtml_name\">"+name+"</span><br><a href=\""+aff+"\" target=\"_blank\" rel=\"nofollow\"><img class=\"apphtml_badge\" src=\"http://linkmaker.itunes.apple.com/htmlResources/assets/ja_jp//images/web/linkmaker/badge_itunes-lrg.svg\" style=\"margin:5px 0px 0px 0px;border:none;padding:0px\"></a></div>\n";
+	} else if(kind == "ebook") {
+		tmpl="<div class=\"apphtml\"><img class=\"apphtml_icon\" style=\"margin:0px 0px 5px 0px;border:none;padding:0px;\" width=\"225\" src=\""+icon450+"\"><br><span class=\"apphtml_name\">"+name+" - "+artist+"</span><br><a href=\""+aff+"\" target=\"_blank\" rel=\"nofollow\"><img class=\"apphtml_badge\" src=\"http://linkmaker.itunes.apple.com/htmlResources/assets/ja_jp//images/web/linkmaker/badge_bookstore-lrg.svg\" style=\"margin:5px 0px 0px 0px;border:none;padding:0px\"></a></div>\n";
+	}
+
+	if(out == "code") {
+		body += "<tr><td valign=top><img style=\"padding:0px;border:none;\" width=\"50\" src=\""+icon60+"\"></td><td valign=top width=\"200\">"+name+"<br>("+artist+")</td><td><textarea onclick=\"this.focus();this.select()\">" + tmpl + "</textarea></td></tr>\n";
+		
+	} else {
+		editor = out + encodeURIComponent(tmpl);
+		body += "<tr><td valign=top><img style=\"padding:0px;border:none;\" width=\"50\" src=\""+icon60+"\"></td><td valign=top width=\"200\"><a href=\""+editor+"\" target=\"_blank\">"+name+"</a></td></tr>\n";
+	}
+	}
+	body="<table>\n"+body+"</table>\n";
+    d.getElementById("preview").innerHTML = body;
+}
+
+function Clear() {
+	var d = document;
+	d.getElementById("preview").innerHTML = "";
+	d.getElementById("ct").value = "";
+	d.getElementById("app").value = "";
+}
+
+//-->
+</script>
+
+<script type="text/javascript">
+window.onload = function onLoad() {
+	param = GetQueryString();
+	if(param == null) {return;}
+	if(param["at"] != null) {document.getElementById("at").value = param["at"];}
+	if(param["ct"] != null) {document.getElementById("ct").value = param["ct"];}
+	if(param["out"] != null) {document.getElementById("out").value = param["out"];}
+}
+
+function GetQueryString() {
+	if (1 < document.location.search.length) {
+		var query = document.location.search.substring(1);
+		var parameters = query.split('&');
+		var result = new Object();
+		for (var i = 0; i < parameters.length; i++) {
+			var element = parameters[i].split('=');
+			var paramName = decodeURIComponent(element[0]);
+			var paramValue = decodeURIComponent(element[1]);
+			result[paramName] = decodeURIComponent(paramValue);
+		}
+		return result;
+	}
+	return null;
+}
+//-->
+</script>
+
+<div id="preview"></div> 
+</body> 
+</html>
